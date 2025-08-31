@@ -1,0 +1,412 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  body {
+    font-family: 'Inter', system-ui, sans-serif;
+    overflow-x: hidden;
+  }
+  
+  * {
+    box-sizing: border-box; 
+
+  .mobile-py {
+    @apply py-3 sm:py-4 md:py-6 lg:py-8;
+  }
+
+  .mobile-px {
+    @apply px-3 sm:px-4 md:px-6 lg:px-8;
+  }
+
+  .mobile-m {
+    @apply m-3 sm:m-4 md:m-6 lg:m-8;
+  }
+
+  .mobile-my {
+    @apply my-3 sm:my-4 md:my-6 lg:my-8;
+  }
+
+  .mobile-mx {
+    @apply mx-3 sm:mx-4 md:mx-6 lg:mx-8;
+  }
+
+  /* Enhanced Mobile grid layouts */
+  .mobile-grid {
+    @apply grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6;
+  }
+
+  .mobile-grid-2 {
+    @apply grid grid-cols-1 sm:grid-cols-2;
+  }
+
+  .mobile-grid-3 {
+    @apply grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3;
+  }
+
+  .mobile-grid-4 {
+    @apply grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4;
+  }
+
+  .mobile-grid-5 {
+    @apply grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5;
+  }
+
+  /* Enhanced Mobile flex layouts */
+  .mobile-flex-col {
+    @apply flex flex-col sm:flex-row;
+  }
+
+  .mobile-flex-wrap {
+    @apply flex flex-wrap;
+  }
+
+  .mobile-flex-center {
+    @apply flex items-center justify-center;
+  }
+
+  .mobile-flex-between {
+    @apply flex flex-col sm:flex-row items-start sm:items-center justify-start sm:justify-between gap-2 sm:gap-0;
+  }
+
+  .mobile-flex-start {
+    @apply flex flex-col sm:flex-row items-start gap-2 sm:gap-4;
+  }
+
+  .mobile-flex-end {
+    @apply flex flex-col sm:flex-row items-end gap-2 sm:gap-4;
+  }
+
+  /* Enhanced Mobile spacing */
+  .mobile-gap {
+    @apply gap-3 sm:gap-4 md:gap-6 lg:gap-8;
+  }
+
+  .mobile-gap-y {
+    @apply gap-y-3 sm:gap-y-4 md:gap-y-6 lg:gap-y-8;
+  }
+
+  .mobile-gap-x {
+    @apply gap-x-3 sm:gap-x-4 md:gap-x-6 lg:gap-x-8;
+  }
+
+  /* Enhanced Mobile margins and paddings */
+  .mobile-mb {
+    @apply mb-3 sm:mb-4 md:mb-6 lg:mb-8;
+  }
+
+  .mobile-mt {
+    @apply mt-3 sm:mt-4 md:mt-6 lg:mt-8;
+  }
+
+  .mobile-ml {
+    @apply ml-3 sm:ml-4 md:ml-6 lg:ml-8;
+  }
+
+  .mobile-mr {
+    @apply mr-3 sm:mr-4 md:mr-6 lg:mr-8;
+  }
+
+  .mobile-pb {
+    @apply pb-3 sm:pb-4 md:pb-6 lg:pb-8;
+  }
+
+  .mobile-pt {
+    @apply pt-3 sm:pt-4 md:pt-6 lg:pt-8;
+  }
+
+  .mobile-pl {
+    @apply pl-3 sm:pl-4 md:pl-6 lg:pl-8;
+  }
+
+  .mobile-pr {
+    @apply pr-3 sm:pr-4 md:pr-6 lg:pr-8;
+  }
+
+  /* Enhanced Mobile-specific component styles */
+  .mobile-header {
+    @apply px-3 py-2 sm:px-4 sm:py-3 md:px-6 md:py-4 lg:px-8 lg:py-6;
+  }
+
+  .mobile-hero {
+    @apply h-64 sm:h-80 md:h-96 lg:h-[500px] xl:h-[600px];
+  }
+
+  .mobile-news-item {
+    @apply p-3 sm:p-4 md:p-6 lg:p-8;
+  }
+
+  .mobile-button {
+    @apply px-3 py-2 sm:px-4 sm:py-2 md:px-6 md:py-3 lg:px-8 lg:py-4 text-sm sm:text-base md:text-lg;
+  }
+
+  .mobile-modal {
+    @apply p-3 sm:p-4 md:p-6 lg:p-8 max-w-full sm:max-w-lg md:max-w-2xl lg:max-w-4xl xl:max-w-6xl;
+  }
+
+  /* Enhanced Mobile navigation */
+  .mobile-nav {
+    @apply fixed inset-0 z-50 bg-white transform transition-transform duration-300 ease-in-out;
+  }
+
+  .mobile-nav-open {
+    @apply translate-x-0;
+  }
+
+  .mobile-nav-closed {
+    @apply -translate-x-full;
+  }
+
+  /* Enhanced Mobile image sizes */
+  .mobile-image-small {
+    @apply w-16 h-12 sm:w-20 sm:h-16 md:w-24 md:h-20 lg:w-32 lg:h-24;
+  }
+
+  .mobile-image-medium {
+    @apply w-24 h-16 sm:w-32 sm:h-20 md:w-40 md:h-24 lg:w-48 lg:h-32;
+  }
+
+  .mobile-image-large {
+    @apply w-32 h-20 sm:w-40 sm:h-24 md:w-48 md:h-32 lg:w-56 lg:h-40;
+  }
+
+  .mobile-image-hero {
+    @apply w-full h-48 sm:h-64 md:h-80 lg:h-96 xl:h-[500px];
+  }
+
+  /* Enhanced Mobile button stacks */
+  .mobile-btn-stack {
+    @apply flex flex-col space-y-2 sm:flex-row sm:space-y-0 sm:space-x-2;
+  }
+
+  .mobile-btn-stack-reverse {
+    @apply flex flex-col-reverse space-y-reverse space-y-2 sm:flex-row sm:space-y-0 sm:space-x-2;
+  }
+
+  /* Enhanced Mobile form elements */
+  .mobile-form-group {
+    @apply space-y-2 sm:space-y-3 md:space-y-4;
+  }
+
+  .mobile-input {
+    @apply w-full px-3 py-2 sm:px-4 sm:py-3 md:px-6 md:py-4 text-sm sm:text-base md:text-lg;
+  }
+
+  .mobile-label {
+    @apply text-sm sm:text-base md:text-lg font-medium;
+  }
+
+  /* Enhanced Mobile card layouts */
+  .mobile-card-grid {
+    @apply grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-3 sm:gap-4 md:gap-6 lg:gap-8;
+  }
+
+  .mobile-card-stack {
+    @apply space-y-3 sm:space-y-4 md:space-y-6 lg:space-y-8;
+  }
+
+  /* Enhanced Mobile sidebar */
+  .mobile-sidebar {
+    @apply fixed inset-y-0 left-0 z-40 w-64 sm:w-72 md:w-80 bg-white border-r border-gray-200 shadow-lg transform transition-transform duration-300 ease-in-out;
+  }
+
+  .mobile-sidebar-open {
+    @apply translate-x-0;
+  }
+
+  .mobile-sidebar-closed {
+    @apply -translate-x-full;
+  }
+
+  /* Enhanced Mobile overlay */
+  .mobile-overlay {
+    @apply fixed inset-0 z-30 bg-black bg-opacity-50 transition-opacity duration-300;
+  }
+
+  /* Enhanced Mobile text alignment */
+  .mobile-text-center {
+    @apply text-center sm:text-left md:text-center;
+  }
+
+  .mobile-text-left {
+    @apply text-left;
+  }
+
+  .mobile-text-right {
+    @apply text-right;
+  }
+
+  /* Enhanced Mobile spacing utilities */
+  .mobile-section {
+    @apply py-8 sm:py-12 md:py-16 lg:py-20;
+  }
+
+  .mobile-section-sm {
+    @apply py-4 sm:py-6 md:py-8 lg:py-12;
+  }
+
+  .mobile-section-lg {
+    @apply py-12 sm:py-16 md:py-20 lg:py-24;
+  }
+
+  /* Enhanced Mobile container */
+  .mobile-container-fluid {
+    @apply w-full px-3 sm:px-4 md:px-6 lg:px-8 xl:px-12;
+  }
+
+  .mobile-container-sm {
+    @apply max-w-4xl mx-auto px-3 sm:px-4 md:px-6 lg:px-8;
+  }
+
+  .mobile-container-md {
+    @apply max-w-6xl mx-auto px-3 sm:px-4 md:px-6 lg:px-8 xl:px-12;
+  }
+
+  .mobile-container-lg {
+    @apply max-w-7xl mx-auto px-3 sm:px-4 md:px-6 lg:px-8 xl:px-12;
+  }
+
+  .mobile-container-xl {
+    @apply max-w-full mx-auto px-3 sm:px-4 md:px-6 lg:px-8 xl:px-12 2xl:px-16;
+  }
+}
+
+/* Marquee Animation */
+@keyframes marquee {
+  0% {
+    transform: translateX(100%);
+  }
+  100% {
+    transform: translateX(-100%);
+  }
+}
+
+.animate-marquee {
+  animation: marquee 30s linear infinite;
+}
+
+/* Mobile responsive marquee */
+@media (max-width: 640px) {
+  .animate-marquee {
+    animation: marquee 20s linear infinite;
+  }
+}
+
+@media (max-width: 768px) {
+  .animate-marquee {
+    animation: marquee 25s linear infinite;
+  }
+}
+
+/* WhatsApp Chat Animations */
+@keyframes slide-in-from-bottom {
+  0% {
+    opacity: 0;
+    transform: translateY(20px) scale(0.95);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@keyframes bounce-in {
+  0% {
+    opacity: 0;
+    transform: scale(0.3) rotate(-180deg);
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1.05) rotate(-90deg);
+  }
+  70% {
+    transform: scale(0.9) rotate(0deg);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1) rotate(0deg);
+  }
+}
+
+@keyframes pulse-glow {
+  0%, 100% {
+    box-shadow: 0 0 20px rgba(34, 197, 94, 0.4);
+  }
+  50% {
+    box-shadow: 0 0 30px rgba(34, 197, 94, 0.8), 0 0 40px rgba(34, 197, 94, 0.4);
+  }
+}
+
+@keyframes float {
+  0%, 100% {
+    transform: translateY(0px);
+  }
+  50% {
+    transform: translateY(-5px);
+  }
+}
+
+@keyframes wiggle {
+  0%, 100% {
+    transform: rotate(0deg);
+  }
+  25% {
+    transform: rotate(3deg);
+  }
+  75% {
+    transform: rotate(-3deg);
+  }
+}
+
+.animate-in {
+  animation: slide-in-from-bottom 0.3s ease-out;
+}
+
+.slide-in-from-bottom-2 {
+  animation: slide-in-from-bottom 0.3s ease-out;
+}
+
+.bounce-in {
+  animation: bounce-in 0.6s ease-out;
+}
+
+.pulse-glow {
+  animation: pulse-glow 2s ease-in-out infinite;
+}
+
+.float {
+  animation: float 3s ease-in-out infinite;
+}
+
+.wiggle {
+  animation: wiggle 0.5s ease-in-out;
+}
+
+/* WhatsApp specific hover effects */
+.whatsapp-hover {
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.whatsapp-hover:hover {
+  animation: wiggle 0.5s ease-in-out;
+}
+
+/* Enhanced shadow utilities */
+.shadow-3xl {
+  box-shadow: 0 35px 60px -12px rgba(0, 0, 0, 0.25);
+}
+
+/* Backdrop blur utilities */
+.backdrop-blur-sm {
+  backdrop-filter: blur(4px);
+}
+
+.backdrop-blur-md {
+  backdrop-filter: blur(12px);
+}
+
+.backdrop-blur-lg {
+  backdrop-filter: blur(16px);
+}
+
+} /* Close @layer base */
