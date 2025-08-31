@@ -3,7 +3,7 @@ import { ChevronLeft, ChevronRight } from 'lucide-react';
 import { useLanguage } from '../contexts/LanguageContext';
 import { translations } from '../translations';
 
-const API_URL = 'http://localhost:4000/api';
+const API_URL = 'https://times-backend-ybql.onrender.com/api';
 
 function HeroCarousel() {
   const { language, isHindi } = useLanguage();
