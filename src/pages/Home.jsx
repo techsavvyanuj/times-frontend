@@ -21,9 +21,16 @@ const Home = () => {
   const [bnLoading, setBnLoading] = useState(true)
   const [bnError, setBnError] = useState(null)
 
+  // Fetch featured stories from backend
+  const [featuredStories, setFeaturedStories] = useState([])
+  const [fsLoading, setFsLoading] = useState(true)
+  const [fsError, setFsError] = useState(null)
+
   useEffect(() => {
     let mounted = true
-    const API_BASE = 'https://times-backend-ybql.onrender.com/api'
+    const API_BASE = window.location.hostname === 'localhost' 
+      ? 'http://localhost:4000/api' 
+      : 'https://times-backend-ybql.onrender.com/api'
 
     const fetchBreaking = async () => {
       try {
@@ -66,36 +73,78 @@ const Home = () => {
     return () => { mounted = false; clearInterval(interval) }
   }, [isHindi])
 
-  // Dummy data with fallbacks
-  const featuredStories = [
-    {
-      id: 1,
-      title: isHindi ? 'तकनीकी क्षेत्र में नई सफलता' : 'New Success in Technology Sector',
-      description: isHindi ? 'भारतीय स्टार्टअप ने एक नई तकनीक विकसित की है।' : 'An Indian startup has developed a new technology.',
-      category: isHindi ? 'तकनीक' : 'Technology',
-      image: 'https://via.placeholder.com/300x200/1f2937/ffffff?text=Technology',
-      views: '8.9K',
-      timeAgo: '4 hours ago'
-    },
-    {
-      id: 2,
-      title: isHindi ? 'व्यापार जगत में बड़ा बदलाव' : 'Big Change in Business World',
-      description: isHindi ? 'व्यापार क्षेत्र में नई नीतियों की घोषणा की गई है।' : 'New policies have been announced in the business sector.',
-      category: isHindi ? 'व्यापार' : 'Business',
-      image: 'https://via.placeholder.com/300x200/1f2937/ffffff?text=Business',
-      views: '6.7K',
-      timeAgo: '5 hours ago'
-    },
-    {
-      id: 3,
-      title: isHindi ? 'स्वास्थ्य और जीवनशैली के टिप्स' : 'Health and Lifestyle Tips',
-      description: isHindi ? 'विशेषज्ञों ने स्वस्थ जीवन के लिए महत्वपूर्ण सुझाव दिए हैं।' : 'Experts have given important suggestions for a healthy life.',
-      category: isHindi ? 'जीवनशैली' : 'Lifestyle',
-      image: 'https://via.placeholder.com/300x200/1f2937/ffffff?text=Lifestyle',
-      views: '9.3K',
-      timeAgo: '6 hours ago'
+  // Fetch featured stories from backend
+  useEffect(() => {
+    let mounted = true
+    
+    const fetchFeaturedStories = async () => {
+      try {
+        setFsLoading(true)
+        const API_BASE = window.location.hostname === 'localhost' 
+          ? 'http://localhost:4000/api' 
+          : 'https://times-backend-ybql.onrender.com/api'
+          
+        const response = await fetch(`${API_BASE}/featured-stories`)
+        if (!response.ok) throw new Error('Failed to fetch featured stories')
+        
+        const data = await response.json()
+        if (mounted) {
+          // Sort by priority and limit to top 3
+          const sortedStories = Array.isArray(data) 
+            ? data.sort((a, b) => (a.priority || 1) - (b.priority || 1)).slice(0, 3)
+            : []
+          setFeaturedStories(sortedStories)
+          setFsError(null)
+        }
+      } catch (error) {
+        console.error('Error fetching featured stories:', error)
+        if (mounted) {
+          setFsError(error.message)
+          setFeaturedStories([]) // Fallback to empty array
+        }
+      } finally {
+        if (mounted) setFsLoading(false)
+      }
     }
-  ]
+
+    fetchFeaturedStories()
+    const interval = setInterval(fetchFeaturedStories, 60000) // Refresh every minute
+    return () => { mounted = false; clearInterval(interval) }
+  }, [isHindi])
+
+  // Helper function to get time ago
+  const getTimeAgo = (timestamp) => {
+    if (!timestamp) return ''
+    const now = new Date()
+    const past = new Date(timestamp)
+    const diffInMinutes = Math.floor((now - past) / (1000 * 60))
+    
+    if (diffInMinutes < 1) return 'Just now'
+    if (diffInMinutes < 60) return `${diffInMinutes} minute${diffInMinutes > 1 ? 's' : ''} ago`
+    
+    const diffInHours = Math.floor(diffInMinutes / 60)
+    if (diffInHours < 24) return `${diffInHours} hour${diffInHours > 1 ? 's' : ''} ago`
+    
+    const diffInDays = Math.floor(diffInHours / 24)
+    return `${diffInDays} day${diffInDays > 1 ? 's' : ''} ago`
+  }
+
+  // Format featured stories for display
+  const formattedFeaturedStories = featuredStories.map(story => ({
+    id: story.id,
+    title: story.title,
+    description: story.description,
+    summary: story.description,
+    content: story.content,
+    fullContent: story.content,
+    category: story.category,
+    image: story.imageUrl || 'https://via.placeholder.com/300x200/1f2937/ffffff?text=Story',
+    views: story.views || '0',
+    timeAgo: getTimeAgo(story.timestamp)
+  }))
+
+  // Dummy data with fallbacks (commented out - now using API)
+  // const featuredStories = [...]
 
   const specialCoverage = [
     {
@@ -165,7 +214,7 @@ const Home = () => {
             {/* Featured Stories */}
             <NewsFeed 
               title={t?.featuredStories || 'Featured Stories'}
-              articles={featuredStories}
+              articles={formattedFeaturedStories}
               showViewAll={true}
             />
 

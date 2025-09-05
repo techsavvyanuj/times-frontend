@@ -410,3 +410,14 @@
 }
 
 } /* Close @layer base */
+
+@layer components {
+  /* Image Utility Styles */
+  .image-contain {
+    @apply object-contain;
+  }
+  
+  .image-cover {
+    @apply object-cover;
+  }
+}

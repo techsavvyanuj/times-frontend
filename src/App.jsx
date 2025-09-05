@@ -24,6 +24,7 @@ import AdvertiseWithUs from './pages/AdvertiseWithUs'
 import PrivacyPolicy from './pages/PrivacyPolicy'
 import TermsConditions from './pages/TermsConditions'
 import DownloadApp from './pages/DownloadApp'
+import NewsDetail from './pages/NewsDetail'
 
 // Utility Tools
 import EMICalculator from './pages/EMICalculator'
@@ -62,6 +63,7 @@ function App() {
             <Route path="/privacy-policy" element={<PrivacyPolicy />} />
             <Route path="/terms-conditions" element={<TermsConditions />} />
             <Route path="/download-app" element={<DownloadApp />} />
+            <Route path="/news/:id" element={<NewsDetail />} />
 
             {/* Utility Tools Routes */}
             <Route path="/tools/emi-calculator" element={<EMICalculator />} />

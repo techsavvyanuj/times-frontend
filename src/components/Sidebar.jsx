@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { TrendingUp, Clock, MapPin, Thermometer, Droplets, Wind, Sun, Cloud, CloudRain, CloudLightning } from 'lucide-react'
 import { useLanguage } from '../contexts/LanguageContext'
@@ -98,54 +98,108 @@ const Sidebar = () => {
 
   const selectedCityData = mpCities.find(city => city.name === selectedCity) || mpCities[0]
   const forecastData = getForecastData(selectedCity)
+  
+  // State for trending stories
+  const [trendingStories, setTrendingStories] = useState([])
+  const [trendingLoading, setTrendingLoading] = useState(true)
 
-  const trendingStories = [
-    {
-      id: 1,
-      title: isHindi ? "तोड़ने वाला: पीएम मोदी से बड़ी घोषणा" : "Breaking: Major announcement from PM Modi",
-      category: isHindi ? "भारत" : "India",
-      views: "15.2K",
-      time: isHindi ? "1 घंटा पहले" : "1 hour ago",
-      youtubeUrl: 'https://www.youtube.com/watch?v=dQw4w9WgXcQ',
-      fullContent: isHindi ? 'पीएम मोदी ने आज एक बड़ी घोषणा की है जो देश के विकास के लिए महत्वपूर्ण है।' : 'PM Modi today made a major announcement that is important for the development of the country.'
-    },
-    {
-      id: 2,
-      title: isHindi ? "क्रिकेट: भारत टॉस जीतता है, बल्लेबाजी चुनता है" : "Cricket: India wins the toss, chooses to bat",
-      category: isHindi ? "खेल" : "Sports",
-      views: "12.8K",
-      time: isHindi ? "2 घंटे पहले" : "2 hours ago",
-      youtubeUrl: 'https://www.youtube.com/watch?v=dQw4w9WgXcQ',
-      fullContent: isHindi ? 'भारतीय क्रिकेट टीम ने टॉस जीता है और बल्लेबाजी का फैसला किया है।' : 'The Indian cricket team has won the toss and decided to bat.'
-    },
-    {
-      id: 3,
-      title: isHindi ? "शेयर बाजार: सेंसेक्स 75,000 के निशान को पार करता है" : "Stock Market: Sensex crosses 75,000 mark",
-      category: isHindi ? "व्यापार" : "Business",
-      views: "9.5K",
-      time: isHindi ? "3 घंटे पहले" : "3 hours ago",
-      youtubeUrl: 'https://www.youtube.com/watch?v=dQw4w9WgXcQ',
-      fullContent: isHindi ? 'शेयर बाजार में सेंसेक्स ने 75,000 का नया रिकॉर्ड बनाया है।' : 'In the stock market, Sensex has created a new record of 75,000.'
-    },
-    {
-      id: 4,
-      title: isHindi ? "तकनीक: आज नया स्मार्टफोन लॉन्च" : "Technology: New smartphone launch today",
-      category: isHindi ? "तकनीक" : "Technology",
-      views: "8.7K",
-      time: isHindi ? "4 घंटे पहले" : "4 hours ago",
-      youtubeUrl: 'https://www.youtube.com/watch?v=dQw4w9WgXcQ',
-      fullContent: isHindi ? 'आज तकनीकी कंपनी ने नया स्मार्टफोन लॉन्च किया है।' : 'Today the technology company has launched a new smartphone.'
-    },
-    {
-      id: 5,
-      title: isHindi ? "मनोरंजन: बॉलीवुड स्टार की नई परियोजना" : "Entertainment: Bollywood star's new project",
-      category: isHindi ? "मनोरंजन" : "Entertainment",
-      views: "7.3K",
-      time: isHindi ? "5 घंटे पहले" : "5 hours ago",
-      youtubeUrl: 'https://www.youtube.com/watch?v=dQw4w9WgXcQ',
-      fullContent: isHindi ? 'एक प्रमुख बॉलीवुड स्टार ने अपनी नई परियोजना की घोषणा की है।' : 'A major Bollywood star has announced their new project.'
+  // Fetch trending stories from real news data
+  useEffect(() => {
+    const fetchTrendingStories = async () => {
+      try {
+        setTrendingLoading(true)
+        const API_BASE = window.location.hostname === 'localhost' 
+          ? 'http://localhost:4000/api' 
+          : 'https://times-backend-ybql.onrender.com/api'
+
+        // Fetch from multiple sources and combine
+        const [newsRes, breakingRes, featuredRes] = await Promise.all([
+          fetch(`${API_BASE}/news`).catch(() => ({ ok: false })),
+          fetch(`${API_BASE}/breaking-news`).catch(() => ({ ok: false })),
+          fetch(`${API_BASE}/featured-stories`).catch(() => ({ ok: false }))
+        ])
+
+        const newsData = newsRes.ok ? await newsRes.json() : []
+        const breakingData = breakingRes.ok ? await breakingRes.json() : []
+        const featuredData = featuredRes.ok ? await featuredRes.json() : []
+
+        // Combine all news and sort by timestamp (most recent first)
+        const allNews = [
+          ...Array.isArray(newsData) ? newsData.map(item => ({
+            ...item,
+            type: 'news',
+            views: item.views || `${Math.floor(Math.random() * 20) + 5}.${Math.floor(Math.random() * 9)}K`
+          })) : [],
+          ...Array.isArray(breakingData) ? breakingData.map(item => ({
+            ...item,
+            title: item.headline || item.title,
+            type: 'breaking',
+            views: item.views || `${Math.floor(Math.random() * 25) + 10}.${Math.floor(Math.random() * 9)}K`
+          })) : [],
+          ...Array.isArray(featuredData) ? featuredData.map(item => ({
+            ...item,
+            type: 'featured',
+            views: item.views || `${Math.floor(Math.random() * 15) + 8}.${Math.floor(Math.random() * 9)}K`
+          })) : []
+        ]
+
+        // Sort by timestamp and take top 5 most recent
+        const sortedNews = allNews
+          .filter(item => item.title && item.title.trim())
+          .sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp))
+          .slice(0, 5)
+          .map((item, index) => ({
+            id: item.id || index + 1,
+            title: item.title || '',
+            category: item.category || (isHindi ? 'समाचार' : 'News'),
+            views: item.views,
+            time: getTimeAgo(item.timestamp),
+            youtubeUrl: item.youtubeUrl || '',
+            fullContent: item.content || item.fullDescription || item.description || ''
+          }))
+
+        setTrendingStories(sortedNews)
+      } catch (error) {
+        console.error('Error fetching trending stories:', error)
+        setTrendingStories([]) // Set empty array on error
+      } finally {
+        setTrendingLoading(false)
+      }
     }
-  ]
+
+    fetchTrendingStories()
+    // Refresh trending stories every 5 minutes
+    const interval = setInterval(fetchTrendingStories, 300000)
+    return () => clearInterval(interval)
+  }, [isHindi])
+
+  // Helper function to calculate time ago
+  const getTimeAgo = (timestamp) => {
+    if (!timestamp) return isHindi ? 'अज्ञात' : 'Unknown'
+    
+    const now = new Date()
+    const past = new Date(timestamp)
+    const diffInMinutes = Math.floor((now - past) / (1000 * 60))
+    
+    if (diffInMinutes < 1) return isHindi ? 'अभी' : 'Just now'
+    if (diffInMinutes < 60) {
+      return isHindi 
+        ? `${diffInMinutes} मिनट पहले` 
+        : `${diffInMinutes} minute${diffInMinutes > 1 ? 's' : ''} ago`
+    }
+    
+    const diffInHours = Math.floor(diffInMinutes / 60)
+    if (diffInHours < 24) {
+      return isHindi 
+        ? `${diffInHours} घंटे पहले` 
+        : `${diffInHours} hour${diffInHours > 1 ? 's' : ''} ago`
+    }
+    
+    const diffInDays = Math.floor(diffInHours / 24)
+    return isHindi 
+      ? `${diffInDays} दिन पहले` 
+      : `${diffInDays} day${diffInDays > 1 ? 's' : ''} ago`
+  }
 
   const handleStoryClick = (story) => {
     setSelectedStory(story)
@@ -326,42 +380,75 @@ const Sidebar = () => {
           </div>
           
           <div className="space-y-3 sm:space-y-4">
-            {trendingStories.map((story, index) => (
-              <div 
-                key={story.id} 
-                className="group cursor-pointer"
-                onClick={() => handleStoryClick(story)}
-              >
-                <div className="flex items-start space-x-2 sm:space-x-3">
-                  <span className="flex-shrink-0 w-5 h-5 sm:w-6 sm:h-6 bg-gray-100 text-gray-600 rounded-full flex items-center justify-center text-xs sm:text-sm font-medium">
-                    {index + 1}
-                  </span>
-                  <div className="flex-1 min-w-0">
-                    <h4 className="mobile-text-xs sm:mobile-text-sm font-medium text-gray-800 group-hover:text-timesnow-red transition-colors duration-200 overflow-hidden text-ellipsis whitespace-nowrap">
-                      {story.title}
-                    </h4>
-                    <div className="flex flex-wrap items-center gap-1 sm:gap-2 mt-1 sm:mt-2 text-xs text-gray-500">
-                      <span className="bg-gray-100 px-1.5 py-0.5 sm:px-2 sm:py-1 rounded-full text-xs">
-                        {story.category}
-                      </span>
-                      <span className="text-xs">{story.views} {t.views}</span>
-                      <div className="flex items-center space-x-1">
-                        <Clock size={10} className="sm:w-3 sm:h-3" />
-                        <span className="text-xs">{story.time}</span>
+            {trendingLoading ? (
+              // Loading state
+              <div className="space-y-3">
+                {[1, 2, 3, 4, 5].map((i) => (
+                  <div key={i} className="flex items-start space-x-2 sm:space-x-3 animate-pulse">
+                    <div className="flex-shrink-0 w-5 h-5 sm:w-6 sm:h-6 bg-gray-200 rounded-full"></div>
+                    <div className="flex-1 min-w-0">
+                      <div className="h-3 sm:h-4 bg-gray-200 rounded mb-2"></div>
+                      <div className="flex gap-2">
+                        <div className="h-2 bg-gray-200 rounded w-12"></div>
+                        <div className="h-2 bg-gray-200 rounded w-8"></div>
+                        <div className="h-2 bg-gray-200 rounded w-10"></div>
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            ) : trendingStories.length > 0 ? (
+              // Trending stories content
+              trendingStories.map((story, index) => (
+                <div 
+                  key={story.id} 
+                  className="group cursor-pointer"
+                  onClick={() => handleStoryClick(story)}
+                >
+                  <div className="flex items-start space-x-2 sm:space-x-3">
+                    <span className="flex-shrink-0 w-5 h-5 sm:w-6 sm:h-6 bg-gray-100 text-gray-600 rounded-full flex items-center justify-center text-xs sm:text-sm font-medium">
+                      {index + 1}
+                    </span>
+                    <div className="flex-1 min-w-0">
+                      <h4 className="mobile-text-xs sm:mobile-text-sm font-medium text-gray-800 group-hover:text-timesnow-red transition-colors duration-200 overflow-hidden text-ellipsis whitespace-nowrap">
+                        {story.title}
+                      </h4>
+                      <div className="flex flex-wrap items-center gap-1 sm:gap-2 mt-1 sm:mt-2 text-xs text-gray-500">
+                        <span className="bg-gray-100 px-1.5 py-0.5 sm:px-2 sm:py-1 rounded-full text-xs">
+                          {story.category}
+                        </span>
+                        <span className="text-xs">{story.views} {t.views}</span>
+                        <div className="flex items-center space-x-1">
+                          <Clock size={10} className="sm:w-3 sm:h-3" />
+                          <span className="text-xs">{story.time}</span>
+                        </div>
                       </div>
                     </div>
                   </div>
                 </div>
+              ))
+            ) : (
+              // Empty state
+              <div className="text-center py-6">
+                <TrendingUp size={32} className="mx-auto text-gray-300 mb-3" />
+                <p className="text-sm text-gray-500 mb-2">
+                  {isHindi ? 'कोई ट्रेंडिंग स्टोरी उपलब्ध नहीं है' : 'No trending stories available'}
+                </p>
+                <p className="text-xs text-gray-400">
+                  {isHindi ? 'जल्द ही नई कहानियाँ आएंगी' : 'New stories coming soon'}
+                </p>
               </div>
-            ))}
+            )}
           </div>
           
-          <button 
-            onClick={handleViewAllTrending}
-            className="w-full mt-3 sm:mt-4 text-timesnow-red hover:text-red-700 font-medium text-xs sm:text-sm cursor-pointer"
-          >
-            {t.viewAllTrending} →
-          </button>
+          {!trendingLoading && trendingStories.length > 0 && (
+            <button 
+              onClick={handleViewAllTrending}
+              className="w-full mt-3 sm:mt-4 text-timesnow-red hover:text-red-700 font-medium text-xs sm:text-sm cursor-pointer"
+            >
+              {t.viewAllTrending} →
+            </button>
+          )}
         </div>
 
         {/* Advertisement Placeholder - Mobile Responsive */}

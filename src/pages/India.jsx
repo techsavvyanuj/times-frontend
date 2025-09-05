@@ -91,7 +91,9 @@ const India = () => {
 
   useEffect(() => {
     let mounted = true
-    const API_BASE = 'https://times-backend-ybql.onrender.com/api'
+    const API_BASE = window.location.hostname === 'localhost' 
+      ? 'http://localhost:4000/api' 
+      : 'https://times-backend-ybql.onrender.com/api'
     const fetchNews = async () => {
       try {
         setLoadingNews(true)
@@ -106,11 +108,13 @@ const India = () => {
         const mapped = data.map(item => ({
           id: item.id,
           title: item.title || '',
+          content: item.content || '', // Add full content
           summary: item.content ? (item.content.substring(0, 150) + (item.content.length > 150 ? '...' : '')) : '',
           category: item.category || '',
           time: item.timestamp ? new Date(item.timestamp).toLocaleString() : '',
           views: item.views || '',
           image: item.imageUrl || 'https://via.placeholder.com/400x250/cccccc/ffffff?text=News',
+          imageUrl: item.imageUrl || '', // Keep original field
           state: item.state || 'all',
           city: item.city || '',
           highlights: item.highlights || []
@@ -235,7 +239,7 @@ const India = () => {
                     >
                       <div className="relative">
                         <img 
-                          src={item.image} 
+                          src={item.imageUrl || item.image} 
                           alt={item.title}
                           className="w-full h-48 object-cover"
                         />
@@ -333,15 +337,22 @@ const India = () => {
   )
 
   function handleOpenNews(item) {
-    // Normalize to the BreakingNewsView expected shape
+    // Prepare news data for the detail page
     const newsItem = {
       headline: item.title || item.headline || '',
+      title: item.title || '',
       shortDescription: item.summary || item.shortDescription || '',
-      fullDescription: item.fullDescription || item.fullContent || item.summary || item.title || '',
+      fullDescription: item.content || item.fullDescription || item.fullContent || item.summary || 'Full content not available.',
+      content: item.content || item.summary || 'Content not available.',
       videoUrl: item.videoUrl || item.video || '',
-      thumbnailUrl: item.image || item.thumbnail || ''
+      thumbnailUrl: item.imageUrl || item.image || item.thumbnail || '',
+      location: item.city || item.state || '',
+      category: item.category || '',
+      timestamp: item.time || item.timestamp || ''
     }
-    navigate('/breaking-news/view', { state: newsItem })
+    
+    // Navigate to news detail page with the news data
+    navigate(`/news/${item.id}`, { state: newsItem })
   }
 }
 

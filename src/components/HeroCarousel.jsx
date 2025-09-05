@@ -3,7 +3,9 @@ import { ChevronLeft, ChevronRight } from 'lucide-react';
 import { useLanguage } from '../contexts/LanguageContext';
 import { translations } from '../translations';
 
-const API_URL = 'https://times-backend-ybql.onrender.com/api';
+const API_URL = window.location.hostname === 'localhost' 
+  ? 'http://localhost:4000/api' 
+  : 'https://times-backend-ybql.onrender.com/api';
 
 function HeroCarousel() {
   const { language, isHindi } = useLanguage();
@@ -121,7 +123,7 @@ function HeroCarousel() {
               <img
                 src={story.image}
                 alt={story.title}
-                className="w-full h-full object-cover"
+                className="w-full h-full object-contain"
               />
               {story.title && (
                 <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black to-transparent p-4 sm:p-6">

@@ -16,8 +16,25 @@ const NewsFeed = ({ title, articles, showViewAll = false }) => {
   const newsItems = Array.isArray(articles) ? articles : []
 
   const handleNewsClick = (newsItem) => {
-    setSelectedNews(newsItem)
-    setShowVideoModal(true)
+    // For breaking news with video, show video modal
+    if (newsItem.videoUrl || newsItem.youtubeUrl) {
+      setSelectedNews(newsItem)
+      setShowVideoModal(true)
+    } else {
+      // For regular news articles, navigate to news detail page
+      const newsData = {
+        headline: newsItem.title || newsItem.headline || '',
+        title: newsItem.title || '',
+        shortDescription: newsItem.summary || newsItem.description || '',
+        fullDescription: newsItem.content || newsItem.fullContent || newsItem.summary || 'Full content not available.',
+        content: newsItem.content || newsItem.summary || 'Content not available.',
+        thumbnailUrl: newsItem.image || newsItem.thumbnail || '',
+        location: newsItem.location || newsItem.city || '',
+        category: newsItem.category || '',
+        timestamp: newsItem.time || newsItem.timestamp || ''
+      }
+      navigate(`/news/${newsItem.id}`, { state: newsData })
+    }
   }
 
   const handleShare = async (newsItem, platform) => {
@@ -121,7 +138,7 @@ const NewsFeed = ({ title, articles, showViewAll = false }) => {
                 <img 
                   src={item.image || item.thumbnail || 'https://via.placeholder.com/200x120/cccccc/ffffff?text=No+Image'} 
                   alt={item.title}
-                  className="mobile-image-small sm:mobile-image-medium rounded-md cursor-pointer w-full sm:w-auto object-cover"
+                  className="mobile-image-small sm:mobile-image-medium rounded-md cursor-pointer w-full sm:w-auto object-contain"
                   onError={(e) => { e.target.onerror = null; e.target.src = 'https://via.placeholder.com/200x120/cccccc/ffffff?text=No+Image'; }}
                   onClick={() => handleNewsClick(item)}
                 />
