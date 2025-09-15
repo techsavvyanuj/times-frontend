@@ -16,7 +16,7 @@ const Footer = () => {
     {
       name: 'Facebook',
       icon: Facebook,
-      url: 'https://www.facebook.com/timesnowindia',
+      url: 'https://www.facebook.com/share/16PXr96QnH/',
       color: 'hover:text-blue-400'
     },
     {
@@ -28,13 +28,13 @@ const Footer = () => {
     {
       name: 'Instagram',
       icon: Instagram,
-      url: 'https://www.instagram.com/timesnowindia',
+      url: 'https://www.instagram.com/shubham_meena_0?igsh=MWtncmJienh1OGZnNA==',
       color: 'hover:text-pink-400'
     },
     {
       name: 'YouTube',
       icon: Youtube,
-      url: 'https://www.youtube.com/timesnowindia',
+      url: 'https://youtube.com/@timesnowindia24?si=Jxsz019ZzFddpNiZ',
       color: 'hover:text-red-400'
     },
     {
