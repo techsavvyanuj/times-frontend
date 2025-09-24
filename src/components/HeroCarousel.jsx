@@ -5,7 +5,7 @@ import { translations } from '../translations';
 
 const API_URL = window.location.hostname === 'localhost' 
   ? 'http://localhost:4000/api' 
-  : 'https://times-backend-ybql.onrender.com/api';
+  : 'https://api.timesnowindia24.live/api';
 
 function HeroCarousel() {
   const { language, isHindi } = useLanguage();

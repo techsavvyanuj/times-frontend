@@ -30,7 +30,7 @@ const Home = () => {
     let mounted = true
     const API_BASE = window.location.hostname === 'localhost' 
       ? 'http://localhost:4000/api' 
-      : 'https://times-backend-ybql.onrender.com/api'
+      : 'https://api.timesnowindia24.live/api'
 
     const fetchBreaking = async () => {
       try {
@@ -82,7 +82,7 @@ const Home = () => {
         setFsLoading(true)
         const API_BASE = window.location.hostname === 'localhost' 
           ? 'http://localhost:4000/api' 
-          : 'https://times-backend-ybql.onrender.com/api'
+          : 'https://api.timesnowindia24.live/api'
           
         const response = await fetch(`${API_BASE}/featured-stories`)
         if (!response.ok) throw new Error('Failed to fetch featured stories')
