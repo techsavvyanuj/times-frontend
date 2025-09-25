@@ -12,61 +12,54 @@ const NewsDetail = () => {
     // Store original styles
     const originalBodyOverflow = document.body.style.overflow
     const originalHtmlOverflow = document.documentElement.style.overflow
-    const originalBodyPosition = document.body.style.position
-    const originalBodyTop = document.body.style.top
-    const scrollY = window.scrollY
     
-    // Apply styles to prevent scrolling
+    // Apply styles to prevent background scrolling only
     document.body.classList.add('news-detail-open')
     document.body.style.overflow = 'hidden'
     document.documentElement.style.overflow = 'hidden'
-    document.body.style.position = 'fixed'
-    document.body.style.top = `-${scrollY}px`
-    document.body.style.width = '100%'
-    document.body.style.height = '100%'
     
-    // Prevent scroll events on window and document
-    const preventScroll = (e) => {
-      e.preventDefault()
-      e.stopPropagation()
-      return false
+    // Prevent scroll events only on body and document, but allow within news container
+    const preventBackgroundScroll = (e) => {
+      // Allow scrolling within the news content container
+      const newsContainer = document.querySelector('.news-content-container')
+      if (newsContainer && (newsContainer.contains(e.target) || newsContainer === e.target)) {
+        return true // Allow scrolling
+      }
+      
+      // Prevent scrolling on body/document
+      if (e.target === document.body || e.target === document.documentElement) {
+        e.preventDefault()
+        e.stopPropagation()
+        return false
+      }
     }
     
     const preventTouchMove = (e) => {
       // Allow scrolling within the news content container
       const newsContainer = document.querySelector('.news-content-container')
-      if (newsContainer && newsContainer.contains(e.target)) {
-        return
+      if (newsContainer && (newsContainer.contains(e.target) || newsContainer === e.target)) {
+        return true // Allow scrolling
       }
       e.preventDefault()
       e.stopPropagation()
       return false
     }
     
-    // Add event listeners
-    document.addEventListener('wheel', preventScroll, { passive: false })
+    // Add event listeners only for background scroll prevention
+    document.body.addEventListener('wheel', preventBackgroundScroll, { passive: false })
+    document.body.addEventListener('touchmove', preventTouchMove, { passive: false })
     document.addEventListener('touchmove', preventTouchMove, { passive: false })
-    document.addEventListener('scroll', preventScroll, { passive: false })
-    window.addEventListener('scroll', preventScroll, { passive: false })
     
     return () => {
       // Remove event listeners
-      document.removeEventListener('wheel', preventScroll)
+      document.body.removeEventListener('wheel', preventBackgroundScroll)
+      document.body.removeEventListener('touchmove', preventTouchMove)
       document.removeEventListener('touchmove', preventTouchMove)
-      document.removeEventListener('scroll', preventScroll)
-      window.removeEventListener('scroll', preventScroll)
       
       // Restore original styles
       document.body.classList.remove('news-detail-open')
       document.body.style.overflow = originalBodyOverflow
       document.documentElement.style.overflow = originalHtmlOverflow
-      document.body.style.position = originalBodyPosition
-      document.body.style.top = originalBodyTop
-      document.body.style.width = ''
-      document.body.style.height = ''
-      
-      // Restore scroll position
-      window.scrollTo(0, scrollY)
     }
   }, [])
   
