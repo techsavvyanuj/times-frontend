@@ -10,13 +10,24 @@ const NewsDetail = () => {
   
   React.useEffect(() => {
     // Prevent background scroll when NewsDetail is mounted
-    const originalStyle = window.getComputedStyle(document.body).overflow
+    const originalBodyOverflow = document.body.style.overflow
+    const originalHtmlOverflow = document.documentElement.style.overflow
+    const originalBodyPosition = document.body.style.position
+    
+    // Apply styles to prevent scrolling
     document.body.style.overflow = 'hidden'
     document.documentElement.style.overflow = 'hidden'
+    document.body.style.position = 'fixed'
+    document.body.style.width = '100%'
+    document.body.style.height = '100%'
     
     return () => {
-      document.body.style.overflow = originalStyle
-      document.documentElement.style.overflow = 'auto'
+      // Restore original styles
+      document.body.style.overflow = originalBodyOverflow
+      document.documentElement.style.overflow = originalHtmlOverflow
+      document.body.style.position = originalBodyPosition
+      document.body.style.width = ''
+      document.body.style.height = ''
     }
   }, [])
   
@@ -25,9 +36,9 @@ const NewsDetail = () => {
   // If no news data is passed, redirect back
   if (!newsItem) {
     return (
-      <div className="fixed inset-0 bg-gray-50 flex items-center justify-center">
-        <div className="text-center">
-          <h2 className="text-2xl font-bold text-gray-800 mb-4">
+      <div className="fixed inset-0 bg-gray-50 flex items-center justify-center z-50">
+        <div className="text-center p-4">
+          <h2 className="text-xl sm:text-2xl font-bold text-gray-800 mb-4">
             {isHindi ? 'कोई समाचार नहीं मिला' : 'No news found'}
           </h2>
           <button
@@ -42,10 +53,10 @@ const NewsDetail = () => {
   }
 
   return (
-    <div className="fixed inset-0 bg-gray-50 overflow-y-auto">
+    <div className="fixed inset-0 bg-gray-50 overflow-y-auto z-50">
       {/* Header */}
-      <div className="bg-white shadow-sm">
-        <div className="container mx-auto px-4 py-4">
+      <div className="bg-white shadow-sm sticky top-0 z-10">
+        <div className="container mx-auto px-4 py-3 sm:py-4">
           <button
             onClick={() => navigate(-1)}
             className="flex items-center text-gray-600 hover:text-orange-500 transition-colors mb-4"
@@ -57,12 +68,12 @@ const NewsDetail = () => {
       </div>
 
       {/* Article Content */}
-      <div className="container mx-auto px-4 py-8">
+      <div className="container mx-auto px-4 py-4 sm:py-8">
         <div className="max-w-4xl mx-auto">
           <article className="bg-white rounded-lg shadow-md overflow-hidden">
             {/* Article Header */}
-            <div className="p-6 border-b border-gray-200">
-              <h1 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4 leading-tight">
+            <div className="p-4 sm:p-6 border-b border-gray-200">
+              <h1 className="text-xl sm:text-2xl md:text-3xl lg:text-4xl font-bold text-gray-900 mb-4 leading-tight">
                 {newsItem.headline || newsItem.title}
               </h1>
               
@@ -84,7 +95,7 @@ const NewsDetail = () => {
               </div>
 
               {newsItem.shortDescription && (
-                <p className="text-lg text-gray-700 leading-relaxed">
+                <p className="text-base sm:text-lg text-gray-700 leading-relaxed">
                   {newsItem.shortDescription}
                 </p>
               )}
@@ -102,8 +113,8 @@ const NewsDetail = () => {
             )}
 
             {/* Article Body */}
-            <div className="p-6">
-              <div className="prose prose-lg max-w-none">
+            <div className="p-4 sm:p-6">
+              <div className="prose prose-sm sm:prose-lg max-w-none">
                 <div className="text-gray-800 leading-relaxed">
                   {/* Split content into paragraphs for better readability */}
                   {(newsItem.fullDescription || newsItem.content || '')
