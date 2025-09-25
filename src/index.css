@@ -420,4 +420,18 @@
   .image-cover {
     @apply object-cover;
   }
+
+  /* News Detail Scroll Prevention */
+  .news-content-container {
+    overscroll-behavior: contain;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  /* Prevent scroll chaining when news detail is open */
+  body.news-detail-open {
+    position: fixed !important;
+    overflow: hidden !important;
+    width: 100% !important;
+    height: 100% !important;
+  }
 }
