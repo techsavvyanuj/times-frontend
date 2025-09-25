@@ -4,23 +4,28 @@ import { ArrowLeft, Clock, User, MapPin, Tag, Share2 } from 'lucide-react'
 import { useLanguage } from '../contexts/LanguageContext'
 
 const NewsDetail = () => {
-    React.useEffect(() => {
-    // Prevent background scroll when NewsDetail is mounted
-    document.body.style.overflow = 'hidden';
-    return () => {
-      document.body.style.overflow = '';
-    };
-  }, []);
   const location = useLocation()
   const navigate = useNavigate()
   const { isHindi } = useLanguage()
+  
+  React.useEffect(() => {
+    // Prevent background scroll when NewsDetail is mounted
+    const originalStyle = window.getComputedStyle(document.body).overflow
+    document.body.style.overflow = 'hidden'
+    document.documentElement.style.overflow = 'hidden'
+    
+    return () => {
+      document.body.style.overflow = originalStyle
+      document.documentElement.style.overflow = 'auto'
+    }
+  }, [])
   
   const newsItem = location.state
 
   // If no news data is passed, redirect back
   if (!newsItem) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+      <div className="fixed inset-0 bg-gray-50 flex items-center justify-center">
         <div className="text-center">
           <h2 className="text-2xl font-bold text-gray-800 mb-4">
             {isHindi ? 'कोई समाचार नहीं मिला' : 'No news found'}
@@ -37,7 +42,7 @@ const NewsDetail = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="fixed inset-0 bg-gray-50 overflow-y-auto">
       {/* Header */}
       <div className="bg-white shadow-sm">
         <div className="container mx-auto px-4 py-4">
