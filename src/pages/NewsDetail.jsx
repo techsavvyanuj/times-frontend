@@ -9,25 +9,64 @@ const NewsDetail = () => {
   const { isHindi } = useLanguage()
   
   React.useEffect(() => {
-    // Prevent background scroll when NewsDetail is mounted
+    // Store original styles
     const originalBodyOverflow = document.body.style.overflow
     const originalHtmlOverflow = document.documentElement.style.overflow
     const originalBodyPosition = document.body.style.position
+    const originalBodyTop = document.body.style.top
+    const scrollY = window.scrollY
     
     // Apply styles to prevent scrolling
+    document.body.classList.add('news-detail-open')
     document.body.style.overflow = 'hidden'
     document.documentElement.style.overflow = 'hidden'
     document.body.style.position = 'fixed'
+    document.body.style.top = `-${scrollY}px`
     document.body.style.width = '100%'
     document.body.style.height = '100%'
     
+    // Prevent scroll events on window and document
+    const preventScroll = (e) => {
+      e.preventDefault()
+      e.stopPropagation()
+      return false
+    }
+    
+    const preventTouchMove = (e) => {
+      // Allow scrolling within the news content container
+      const newsContainer = document.querySelector('.news-content-container')
+      if (newsContainer && newsContainer.contains(e.target)) {
+        return
+      }
+      e.preventDefault()
+      e.stopPropagation()
+      return false
+    }
+    
+    // Add event listeners
+    document.addEventListener('wheel', preventScroll, { passive: false })
+    document.addEventListener('touchmove', preventTouchMove, { passive: false })
+    document.addEventListener('scroll', preventScroll, { passive: false })
+    window.addEventListener('scroll', preventScroll, { passive: false })
+    
     return () => {
+      // Remove event listeners
+      document.removeEventListener('wheel', preventScroll)
+      document.removeEventListener('touchmove', preventTouchMove)
+      document.removeEventListener('scroll', preventScroll)
+      window.removeEventListener('scroll', preventScroll)
+      
       // Restore original styles
+      document.body.classList.remove('news-detail-open')
       document.body.style.overflow = originalBodyOverflow
       document.documentElement.style.overflow = originalHtmlOverflow
       document.body.style.position = originalBodyPosition
+      document.body.style.top = originalBodyTop
       document.body.style.width = ''
       document.body.style.height = ''
+      
+      // Restore scroll position
+      window.scrollTo(0, scrollY)
     }
   }, [])
   
@@ -53,9 +92,9 @@ const NewsDetail = () => {
   }
 
   return (
-    <div className="fixed inset-0 bg-gray-50 overflow-y-auto z-50">
+    <div className="fixed inset-0 bg-gray-50 z-50 flex flex-col">
       {/* Header */}
-      <div className="bg-white shadow-sm sticky top-0 z-10">
+      <div className="bg-white shadow-sm flex-shrink-0">
         <div className="container mx-auto px-4 py-3 sm:py-4">
           <button
             onClick={() => navigate(-1)}
@@ -67,103 +106,105 @@ const NewsDetail = () => {
         </div>
       </div>
 
-      {/* Article Content */}
-      <div className="container mx-auto px-4 py-4 sm:py-8">
-        <div className="max-w-4xl mx-auto">
-          <article className="bg-white rounded-lg shadow-md overflow-hidden">
-            {/* Article Header */}
-            <div className="p-4 sm:p-6 border-b border-gray-200">
-              <h1 className="text-xl sm:text-2xl md:text-3xl lg:text-4xl font-bold text-gray-900 mb-4 leading-tight">
-                {newsItem.headline || newsItem.title}
-              </h1>
-              
-              <div className="flex flex-wrap items-center gap-4 text-sm text-gray-600 mb-4">
-                <div className="flex items-center">
-                  <User size={16} className="mr-2" />
-                  <span>{isHindi ? 'टाइम्स नाउ इंडिया' : 'Times Now India'}</span>
-                </div>
-                <div className="flex items-center">
-                  <Clock size={16} className="mr-2" />
-                  <span>{new Date().toLocaleDateString()}</span>
-                </div>
-                {newsItem.location && (
+      {/* Article Content - Scrollable Container */}
+      <div className="news-content-container flex-1 overflow-y-auto">
+        <div className="container mx-auto px-4 py-4 sm:py-8">
+          <div className="max-w-4xl mx-auto">
+            <article className="bg-white rounded-lg shadow-md overflow-hidden">
+              {/* Article Header */}
+              <div className="p-4 sm:p-6 border-b border-gray-200">
+                <h1 className="text-xl sm:text-2xl md:text-3xl lg:text-4xl font-bold text-gray-900 mb-4 leading-tight">
+                  {newsItem.headline || newsItem.title}
+                </h1>
+                
+                <div className="flex flex-wrap items-center gap-4 text-sm text-gray-600 mb-4">
                   <div className="flex items-center">
-                    <MapPin size={16} className="mr-2" />
-                    <span>{newsItem.location}</span>
+                    <User size={16} className="mr-2" />
+                    <span>{isHindi ? 'टाइम्स नाउ इंडिया' : 'Times Now India'}</span>
                   </div>
+                  <div className="flex items-center">
+                    <Clock size={16} className="mr-2" />
+                    <span>{new Date().toLocaleDateString()}</span>
+                  </div>
+                  {newsItem.location && (
+                    <div className="flex items-center">
+                      <MapPin size={16} className="mr-2" />
+                      <span>{newsItem.location}</span>
+                    </div>
+                  )}
+                </div>
+
+                {newsItem.shortDescription && (
+                  <p className="text-base sm:text-lg text-gray-700 leading-relaxed">
+                    {newsItem.shortDescription}
+                  </p>
                 )}
               </div>
 
-              {newsItem.shortDescription && (
-                <p className="text-base sm:text-lg text-gray-700 leading-relaxed">
-                  {newsItem.shortDescription}
-                </p>
-              )}
-            </div>
-
-            {/* Article Image */}
-            {newsItem.thumbnailUrl && (
-              <div className="relative">
-                <img
-                  src={newsItem.thumbnailUrl}
-                  alt={newsItem.headline || newsItem.title}
-                  className="w-full h-64 md:h-96 object-cover"
-                />
-              </div>
-            )}
-
-            {/* Article Body */}
-            <div className="p-4 sm:p-6">
-              <div className="prose prose-sm sm:prose-lg max-w-none">
-                <div className="text-gray-800 leading-relaxed">
-                  {/* Split content into paragraphs for better readability */}
-                  {(newsItem.fullDescription || newsItem.content || '')
-                    .split('\n\n')
-                    .filter(paragraph => paragraph.trim())
-                    .map((paragraph, index) => (
-                      <p key={index} className="mb-4">
-                        {paragraph.trim()}
-                      </p>
-                    ))
-                  }
+              {/* Article Image */}
+              {newsItem.thumbnailUrl && (
+                <div className="relative">
+                  <img
+                    src={newsItem.thumbnailUrl}
+                    alt={newsItem.headline || newsItem.title}
+                    className="w-full h-64 md:h-96 object-cover"
+                  />
                 </div>
-              </div>
+              )}
 
-              {/* Video if available */}
-              {newsItem.videoUrl && (
-                <div className="mt-8">
-                  <h3 className="text-xl font-semibold mb-4">
-                    {isHindi ? 'संबंधित वीडियो' : 'Related Video'}
-                  </h3>
-                  <div className="relative aspect-video">
-                    <iframe
-                      src={newsItem.videoUrl}
-                      title="News Video"
-                      className="w-full h-full rounded-lg"
-                      allowFullScreen
-                    />
+              {/* Article Body */}
+              <div className="p-4 sm:p-6">
+                <div className="prose prose-sm sm:prose-lg max-w-none">
+                  <div className="text-gray-800 leading-relaxed">
+                    {/* Split content into paragraphs for better readability */}
+                    {(newsItem.fullDescription || newsItem.content || '')
+                      .split('\n\n')
+                      .filter(paragraph => paragraph.trim())
+                      .map((paragraph, index) => (
+                        <p key={index} className="mb-4">
+                          {paragraph.trim()}
+                        </p>
+                      ))
+                    }
                   </div>
                 </div>
-              )}
 
-              {/* Action Buttons */}
-              <div className="flex items-center justify-between mt-8 pt-6 border-t border-gray-200">
-                <div className="flex items-center space-x-4">
-                  <button className="flex items-center space-x-2 px-4 py-2 bg-blue-50 text-blue-600 rounded-lg hover:bg-blue-100 transition-colors">
-                    <Share2 size={18} />
-                    <span>{isHindi ? 'साझा करें' : 'Share'}</span>
+                {/* Video if available */}
+                {newsItem.videoUrl && (
+                  <div className="mt-8">
+                    <h3 className="text-xl font-semibold mb-4">
+                      {isHindi ? 'संबंधित वीडियो' : 'Related Video'}
+                    </h3>
+                    <div className="relative aspect-video">
+                      <iframe
+                        src={newsItem.videoUrl}
+                        title="News Video"
+                        className="w-full h-full rounded-lg"
+                        allowFullScreen
+                      />
+                    </div>
+                  </div>
+                )}
+
+                {/* Action Buttons */}
+                <div className="flex items-center justify-between mt-8 pt-6 border-t border-gray-200">
+                  <div className="flex items-center space-x-4">
+                    <button className="flex items-center space-x-2 px-4 py-2 bg-blue-50 text-blue-600 rounded-lg hover:bg-blue-100 transition-colors">
+                      <Share2 size={18} />
+                      <span>{isHindi ? 'साझा करें' : 'Share'}</span>
+                    </button>
+                  </div>
+                  
+                  <button
+                    onClick={() => navigate('/india')}
+                    className="px-6 py-2 bg-orange-500 text-white rounded-lg hover:bg-orange-600 transition-colors"
+                  >
+                    {isHindi ? 'और समाचार' : 'More News'}
                   </button>
                 </div>
-                
-                <button
-                  onClick={() => navigate('/india')}
-                  className="px-6 py-2 bg-orange-500 text-white rounded-lg hover:bg-orange-600 transition-colors"
-                >
-                  {isHindi ? 'और समाचार' : 'More News'}
-                </button>
               </div>
-            </div>
-          </article>
+            </article>
+          </div>
         </div>
       </div>
     </div>
