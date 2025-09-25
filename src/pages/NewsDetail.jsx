@@ -4,6 +4,13 @@ import { ArrowLeft, Clock, User, MapPin, Tag, Share2 } from 'lucide-react'
 import { useLanguage } from '../contexts/LanguageContext'
 
 const NewsDetail = () => {
+  React.useEffect(() => {
+    // Prevent background scroll when NewsDetail is mounted
+    document.body.style.overflow = 'hidden';
+    return () => {
+      document.body.style.overflow = '';
+    };
+  }, []);
   const location = useLocation()
   const navigate = useNavigate()
   const { isHindi } = useLanguage()
