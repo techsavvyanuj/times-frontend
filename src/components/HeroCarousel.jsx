@@ -129,10 +129,10 @@ function HeroCarousel() {
                 <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black to-transparent p-4 sm:p-6">
                   <div className="max-w-7xl mx-auto">
                                       <h2 className="text-base sm:text-lg md:text-xl lg:text-2xl font-bold text-white mb-2 leading-tight line-clamp-3 sm:line-clamp-2">
-                    {currentLanguage === 'hi' && poster.hindTitle ? poster.hindTitle : poster.title}
+                    {language === 'hi' && story.hindTitle ? story.hindTitle : story.title}
                   </h2>
                   <p className="text-xs sm:text-sm md:text-base text-gray-200 line-clamp-3 sm:line-clamp-2 overflow-hidden">
-                    {currentLanguage === 'hi' && poster.hindSummary ? poster.hindSummary : poster.summary}
+                    {language === 'hi' && story.hindSummary ? story.hindSummary : story.summary}
                   </p>
                   </div>
                 </div>
