@@ -3,7 +3,6 @@ import { useNavigate } from 'react-router-dom'
 import { useLanguage } from '../contexts/LanguageContext'
 import { translations } from '../translations'
 import HeroCarousel from '../components/HeroCarousel'
-import TrendingTicker from '../components/TrendingTicker'
 import QuickAccessWidgets from '../components/QuickAccessWidgets'
 import NewsFeed from '../components/NewsFeed'
 import UtilityTools from '../components/UtilityTools'
@@ -82,7 +81,7 @@ const Home = () => {
         setFsLoading(true)
         const API_BASE = window.location.hostname === 'localhost' 
           ? 'http://localhost:4000/api' 
-          : 'https://times-backend-ybql.onrender.com/api'
+          : 'https://api.timesnowindia24.live/api'
           
         const response = await fetch(`${API_BASE}/featured-stories`)
         if (!response.ok) throw new Error('Failed to fetch featured stories')
@@ -192,9 +191,6 @@ const Home = () => {
     <div className="min-h-screen bg-gray-50">
       {/* Hero Section */}
       <HeroCarousel />
-      
-      {/* Trending Ticker */}
-      <TrendingTicker />
       
       {/* Main Content - Mobile Responsive */}
       <div className="mobile-container py-4 sm:py-6 md:py-8">
