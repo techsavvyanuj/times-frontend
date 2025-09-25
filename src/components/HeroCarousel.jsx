@@ -128,19 +128,12 @@ function HeroCarousel() {
               {story.title && (
                 <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black to-transparent p-4 sm:p-6">
                   <div className="max-w-7xl mx-auto">
-                    <h2 className="text-white text-xl sm:text-2xl md:text-3xl font-bold mt-2">
-                      {story.title}
-                    </h2>
-                    {story.link && (
-                      <a
-                        href={story.link}
-                        className="inline-block text-white text-sm sm:text-base mt-2 hover:underline"
-                        target="_blank"
-                        rel="noopener noreferrer"
-                      >
-                        Read More
-                      </a>
-                    )}
+                                      <h2 className="text-base sm:text-lg md:text-xl lg:text-2xl font-bold text-white mb-2 leading-tight line-clamp-3 sm:line-clamp-2">
+                    {language === 'hi' && story.hindTitle ? story.hindTitle : story.title}
+                  </h2>
+                  <p className="text-xs sm:text-sm md:text-base text-gray-200 line-clamp-3 sm:line-clamp-2 overflow-hidden">
+                    {language === 'hi' && story.hindSummary ? story.hindSummary : story.summary}
+                  </p>
                   </div>
                 </div>
               )}

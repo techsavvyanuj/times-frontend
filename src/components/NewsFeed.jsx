@@ -138,7 +138,7 @@ const NewsFeed = ({ title, articles, showViewAll = false }) => {
                 <img 
                   src={item.image || item.thumbnail || 'https://via.placeholder.com/200x120/cccccc/ffffff?text=No+Image'} 
                   alt={item.title}
-                  className="mobile-image-small sm:mobile-image-medium rounded-md cursor-pointer w-full sm:w-auto object-contain"
+                  className="w-full h-32 sm:w-48 sm:h-28 md:w-56 md:h-32 rounded-md cursor-pointer object-contain bg-gray-100"
                   onError={(e) => { e.target.onerror = null; e.target.src = 'https://via.placeholder.com/200x120/cccccc/ffffff?text=No+Image'; }}
                   onClick={() => handleNewsClick(item)}
                 />
