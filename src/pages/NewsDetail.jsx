@@ -1,13 +1,21 @@
-import React from 'react'
-import { useLocation, useNavigate } from 'react-router-dom'
+import React, { useState, useEffect } from 'react'
+import { useLocation, useNavigate, useParams } from 'react-router-dom'
 import { ArrowLeft, Clock, User, MapPin, Tag, Share2 } from 'lucide-react'
 import { useLanguage } from '../contexts/LanguageContext'
 import { useMetaTags } from '../hooks/useMetaTags'
 
+const API_URL = window.location.hostname === 'localhost' 
+  ? 'http://localhost:4000/api' 
+  : 'https://api.timesnowindia24.live/api';
+
 const NewsDetail = () => {
   const location = useLocation()
   const navigate = useNavigate()
+  const { id } = useParams()
   const { isHindi } = useLanguage()
+  const [newsItem, setNewsItem] = useState(location.state)
+  const [loading, setLoading] = useState(!location.state)
+  const [error, setError] = useState(null)
   
   React.useEffect(() => {
     // Store original styles
@@ -63,8 +71,49 @@ const NewsDetail = () => {
       document.documentElement.style.overflow = originalHtmlOverflow
     }
   }, [])
-  
-  const newsItem = location.state
+
+  // Fetch news data if not provided via navigation state (direct link access)
+  useEffect(() => {
+    if (!newsItem && id) {
+      const fetchNewsData = async () => {
+        try {
+          setLoading(true)
+          setError(null)
+          
+          // Try to fetch from your API - you may need to adjust this endpoint
+          const response = await fetch(`${API_URL}/news/${id}`)
+          
+          if (!response.ok) {
+            throw new Error('News article not found')
+          }
+          
+          const data = await response.json()
+          
+          // Format the data to match expected structure
+          const formattedNews = {
+            headline: data.title || data.headline || '',
+            title: data.title || '',
+            shortDescription: data.summary || data.description || '',
+            fullDescription: data.content || data.fullContent || data.summary || 'Full content not available.',
+            content: data.content || data.summary || 'Content not available.',
+            thumbnailUrl: data.image || data.thumbnail || '',
+            location: data.location || data.city || '',
+            category: data.category || '',
+            timestamp: data.time || data.timestamp || data.createdAt || ''
+          }
+          
+          setNewsItem(formattedNews)
+        } catch (err) {
+          console.error('Error fetching news:', err)
+          setError(err.message)
+        } finally {
+          setLoading(false)
+        }
+      }
+
+      fetchNewsData()
+    }
+  }, [id, newsItem])
 
   // Set up meta tags for social sharing
   useMetaTags({
@@ -94,19 +143,36 @@ const NewsDetail = () => {
     news_keywords: newsItem ? (newsItem.category || 'breaking news, india news, latest news') : 'breaking news, india news, latest news'
   })
 
-  // If no news data is passed, redirect back
-  if (!newsItem) {
+  // Show loading state while fetching data
+  if (loading) {
+    return (
+      <div className="fixed inset-0 bg-gray-50 flex items-center justify-center z-50">
+        <div className="text-center p-4">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-orange-500 mx-auto mb-4"></div>
+          <h2 className="text-xl sm:text-2xl font-bold text-gray-800">
+            {isHindi ? 'लोड हो रहा है...' : 'Loading...'}
+          </h2>
+        </div>
+      </div>
+    )
+  }
+
+  // Show error state if failed to load
+  if (error || !newsItem) {
     return (
       <div className="fixed inset-0 bg-gray-50 flex items-center justify-center z-50">
         <div className="text-center p-4">
           <h2 className="text-xl sm:text-2xl font-bold text-gray-800 mb-4">
             {isHindi ? 'कोई समाचार नहीं मिला' : 'No news found'}
           </h2>
+          <p className="text-gray-600 mb-4">
+            {error || (isHindi ? 'इस समाचार को लोड नहीं किया जा सका।' : 'Unable to load this news article.')}
+          </p>
           <button
-            onClick={() => navigate(-1)}
+            onClick={() => navigate('/')}
             className="bg-orange-500 text-white px-6 py-2 rounded-lg hover:bg-orange-600 transition-colors"
           >
-            {isHindi ? 'वापस जाएं' : 'Go Back'}
+            {isHindi ? 'होम पेज पर जाएं' : 'Go to Homepage'}
           </button>
         </div>
       </div>
