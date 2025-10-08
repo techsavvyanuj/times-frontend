@@ -1,4 +1,5 @@
 import React from 'react'
+import { Helmet } from 'react-helmet-async'
 import { useLocation, useNavigate } from 'react-router-dom'
 import { ArrowLeft, Clock, User, MapPin, Tag, Share2 } from 'lucide-react'
 import { useLanguage } from '../contexts/LanguageContext'
@@ -86,6 +87,35 @@ const NewsDetail = () => {
 
   return (
     <div className="fixed inset-0 bg-gray-50 z-50 flex flex-col">
+      {/* SEO Meta Tags */}
+      <Helmet>
+        <title>{newsItem.headline || newsItem.title} - Times Now India 24/7</title>
+        <meta name="description" content={newsItem.shortDescription || newsItem.summary || (newsItem.content && newsItem.content.substring(0, 160))} />
+        
+        {/* Open Graph Tags for Facebook/WhatsApp */}
+        <meta property="og:title" content={newsItem.headline || newsItem.title} />
+        <meta property="og:description" content={newsItem.shortDescription || newsItem.summary || (newsItem.content && newsItem.content.substring(0, 160))} />
+        <meta property="og:image" content={newsItem.thumbnailUrl || newsItem.image || 'https://timesnowindia24.live/default-news-image.jpg'} />
+        <meta property="og:url" content={window.location.href} />
+        <meta property="og:type" content="article" />
+        <meta property="og:site_name" content="Times Now India 24/7" />
+        <meta property="article:published_time" content={newsItem.timestamp || new Date().toISOString()} />
+        <meta property="article:author" content="Times Now India" />
+        <meta property="article:section" content={newsItem.category || "News"} />
+        
+        {/* Twitter Card Tags */}
+        <meta name="twitter:card" content="summary_large_image" />
+        <meta name="twitter:title" content={newsItem.headline || newsItem.title} />
+        <meta name="twitter:description" content={newsItem.shortDescription || newsItem.summary || (newsItem.content && newsItem.content.substring(0, 160))} />
+        <meta name="twitter:image" content={newsItem.thumbnailUrl || newsItem.image || 'https://timesnowindia24.live/default-news-image.jpg'} />
+        <meta name="twitter:site" content="@TimesNowIndia" />
+        
+        {/* Additional Meta Tags */}
+        <meta name="author" content="Times Now India" />
+        <meta name="news_keywords" content={newsItem.category || "breaking news, india news, latest news"} />
+        <link rel="canonical" href={window.location.href} />
+      </Helmet>
+      
       {/* Header */}
       <div className="bg-white shadow-sm flex-shrink-0">
         <div className="container mx-auto px-4 py-3 sm:py-4">

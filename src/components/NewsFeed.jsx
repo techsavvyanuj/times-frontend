@@ -38,18 +38,19 @@ const NewsFeed = ({ title, articles, showViewAll = false }) => {
   }
 
   const handleShare = async (newsItem, platform) => {
+    const articleUrl = `${window.location.origin}/news/${newsItem.id}`
     const shareData = {
       title: newsItem.title,
       text: newsItem.summary,
-      url: window.location.href
+      url: articleUrl
     }
 
     const shareUrls = {
-      facebook: `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(window.location.href)}&quote=${encodeURIComponent(newsItem.title)}`,
-      twitter: `https://twitter.com/intent/tweet?text=${encodeURIComponent(newsItem.title)}&url=${encodeURIComponent(window.location.href)}`,
-      whatsapp: `https://wa.me/?text=${encodeURIComponent(newsItem.title + ' ' + window.location.href)}`,
-      linkedin: `https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(window.location.href)}`,
-      telegram: `https://t.me/share/url?url=${encodeURIComponent(window.location.href)}&text=${encodeURIComponent(newsItem.title)}`
+      facebook: `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(articleUrl)}&quote=${encodeURIComponent(newsItem.title)}`,
+      twitter: `https://twitter.com/intent/tweet?text=${encodeURIComponent(newsItem.title)}&url=${encodeURIComponent(articleUrl)}`,
+      whatsapp: `https://wa.me/?text=${encodeURIComponent(newsItem.title + ' ' + articleUrl)}`,
+      linkedin: `https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(articleUrl)}`,
+      telegram: `https://t.me/share/url?url=${encodeURIComponent(articleUrl)}&text=${encodeURIComponent(newsItem.title)}`
     }
 
     if (platform === 'native' && navigator.share) {
