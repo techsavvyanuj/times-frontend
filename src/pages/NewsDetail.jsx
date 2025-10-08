@@ -80,29 +80,52 @@ const NewsDetail = () => {
           setLoading(true)
           setError(null)
           
-          // Try to fetch from your API - you may need to adjust this endpoint
-          const response = await fetch(`${API_URL}/news/${id}`)
+          // Since individual news endpoint doesn't exist, try to fetch from available endpoints
+          // and search for the article by ID
+          const endpoints = [
+            `${API_URL}/breaking-news`,
+            `${API_URL}/featured-stories`,
+            `${API_URL}/news`
+          ]
           
-          if (!response.ok) {
+          let foundArticle = null
+          
+          for (const endpoint of endpoints) {
+            try {
+              const response = await fetch(endpoint)
+              if (response.ok) {
+                const data = await response.json()
+                const articles = Array.isArray(data) ? data : (data.articles || [])
+                foundArticle = articles.find(article => 
+                  article.id === id || 
+                  article.id === parseInt(id) || 
+                  article._id === id
+                )
+                if (foundArticle) break
+              }
+            } catch (endpointError) {
+              console.log(`Failed to fetch from ${endpoint}:`, endpointError)
+            }
+          }
+          
+          if (foundArticle) {
+            // Format the data to match expected structure
+            const formattedNews = {
+              headline: foundArticle.title || foundArticle.headline || '',
+              title: foundArticle.title || '',
+              shortDescription: foundArticle.summary || foundArticle.description || '',
+              fullDescription: foundArticle.content || foundArticle.fullContent || foundArticle.summary || 'Full content not available.',
+              content: foundArticle.content || foundArticle.summary || 'Content not available.',
+              thumbnailUrl: foundArticle.image || foundArticle.thumbnail || '',
+              location: foundArticle.location || foundArticle.city || '',
+              category: foundArticle.category || '',
+              timestamp: foundArticle.time || foundArticle.timestamp || foundArticle.createdAt || ''
+            }
+            
+            setNewsItem(formattedNews)
+          } else {
             throw new Error('News article not found')
           }
-          
-          const data = await response.json()
-          
-          // Format the data to match expected structure
-          const formattedNews = {
-            headline: data.title || data.headline || '',
-            title: data.title || '',
-            shortDescription: data.summary || data.description || '',
-            fullDescription: data.content || data.fullContent || data.summary || 'Full content not available.',
-            content: data.content || data.summary || 'Content not available.',
-            thumbnailUrl: data.image || data.thumbnail || '',
-            location: data.location || data.city || '',
-            category: data.category || '',
-            timestamp: data.time || data.timestamp || data.createdAt || ''
-          }
-          
-          setNewsItem(formattedNews)
         } catch (err) {
           console.error('Error fetching news:', err)
           setError(err.message)
@@ -158,22 +181,31 @@ const NewsDetail = () => {
   }
 
   // Show error state if failed to load
-  if (error || !newsItem) {
+  if (error || (!newsItem && !loading)) {
     return (
       <div className="fixed inset-0 bg-gray-50 flex items-center justify-center z-50">
-        <div className="text-center p-4">
+        <div className="text-center p-4 max-w-md">
+          <div className="text-6xl mb-4">📰</div>
           <h2 className="text-xl sm:text-2xl font-bold text-gray-800 mb-4">
             {isHindi ? 'कोई समाचार नहीं मिला' : 'No news found'}
           </h2>
-          <p className="text-gray-600 mb-4">
-            {error || (isHindi ? 'इस समाचार को लोड नहीं किया जा सका।' : 'Unable to load this news article.')}
+          <p className="text-gray-600 mb-6">
+            {isHindi ? 'यह समाचार अब उपलब्ध नहीं है या हटा दिया गया है। कृपया हमारी वेबसाइट पर नवीनतम समाचार देखें।' : 'This news article is no longer available or has been removed. Please check our website for the latest news.'}
           </p>
-          <button
-            onClick={() => navigate('/')}
-            className="bg-orange-500 text-white px-6 py-2 rounded-lg hover:bg-orange-600 transition-colors"
-          >
-            {isHindi ? 'होम पेज पर जाएं' : 'Go to Homepage'}
-          </button>
+          <div className="space-y-3">
+            <button
+              onClick={() => navigate('/')}
+              className="w-full bg-orange-500 text-white px-6 py-2 rounded-lg hover:bg-orange-600 transition-colors"
+            >
+              {isHindi ? 'होम पेज पर जाएं' : 'Go to Homepage'}
+            </button>
+            <button
+              onClick={() => navigate('/india')}
+              className="w-full bg-blue-500 text-white px-6 py-2 rounded-lg hover:bg-blue-600 transition-colors"
+            >
+              {isHindi ? 'ताजा समाचार देखें' : 'View Latest News'}
+            </button>
+          </div>
         </div>
       </div>
     )
